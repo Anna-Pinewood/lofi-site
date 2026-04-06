@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import videoList from "virtual:video-list";
 import {
   DAY_START_HOUR,
@@ -27,11 +27,6 @@ function pickRandom(list: string[], current?: string): string {
 function App() {
   const [mode, setMode] = useState<Mode>(getMode);
   const [src, setSrc] = useState(() => pickRandom(videoList[getMode()]));
-
-  const switchMode = useCallback((newMode: Mode) => {
-    setMode(newMode);
-    setSrc((prev) => pickRandom(videoList[newMode], prev));
-  }, []);
 
   // check for day/night transition
   useEffect(() => {

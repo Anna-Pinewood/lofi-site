@@ -26,6 +26,9 @@ function pickRandom(list: string[], current?: string): string {
 
 function App() {
   const [mode, setMode] = useState<Mode>(getMode);
+  const base = import.meta.env.BASE_URL;
+  const withBase = (path: string) => base + path.replace(/^\//, "");
+
   const [src, setSrc] = useState(() => pickRandom(videoList[getMode()]));
 
   // check for day/night transition
@@ -55,7 +58,7 @@ function App() {
   return (
     <video
       key={src}
-      src={src}
+      src={withBase(src)}
       autoPlay
       loop
       muted

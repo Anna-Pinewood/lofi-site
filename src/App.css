@@ -1,0 +1,54 @@
+.media {
+  display: block;
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.controls {
+  position: fixed;
+  z-index: 1;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  gap: 8px;
+}
+
+.mode-button {
+  padding: 8px 20px;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.mode-button:hover,
+.mode-button:focus-visible {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.5);
+  outline: none;
+}
+
+.severance-button.is-active {
+  color: #d8eeee;
+  background: rgba(35, 82, 83, 0.75);
+  border-color: rgba(197, 235, 234, 0.75);
+}
+
+@media (max-width: 520px) {
+  .controls {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .mode-button {
+    padding-inline: 14px;
+  }
+}

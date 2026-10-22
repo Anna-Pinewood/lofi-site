@@ -1,6 +1,6 @@
 # lofi-site
 
-Lofi girl video wallpaper site. Plays looping background videos that rotate randomly every 2 hours, with separate day and night playlists.
+Lofi girl video wallpaper site. Plays looping background videos that rotate randomly every 2 hours, with separate day and night playlists. The optional Severance mode plays a dedicated looping office video.
 
 ## Quick start
 
@@ -24,7 +24,8 @@ Drop `.mp4` files into the appropriate folder:
 ```
 public/videos/
 ├── day/       ← plays 05:00–17:59
-└── night/     ← plays 18:00–04:59
+├── night/     ← plays 18:00–04:59
+└── severance.mp4
 ```
 
 Restart `npm run dev` to pick up changes.

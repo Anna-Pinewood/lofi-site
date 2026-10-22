@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import videoList from "virtual:video-list";
+import "./App.css";
 import {
   DAY_START_HOUR,
   NIGHT_START_HOUR,
@@ -9,9 +10,12 @@ import {
 } from "./config";
 
 type Mode = "day" | "night";
+type View = "video" | "static" | "severance";
 
 const base = import.meta.env.BASE_URL;
 const withBase = (path: string) => base + path.replace(/^\//, "");
+const SEVERANCE_VIDEO = "/videos/severance.mp4";
+const SEVERANCE_POSTER = "/severance-poster.jpg";
 
 function getMode(): Mode {
   const h = new Date().getHours();
@@ -28,21 +32,16 @@ function pickRandom(list: string[], current?: string): string {
   return next;
 }
 
-const mediaStyle: React.CSSProperties = {
-  display: "block",
-  maxWidth: "900px",
-  width: "100%",
-  margin: "auto",
-  borderRadius: "12px",
-  pointerEvents: "none",
-};
+function getInitialView(): View {
+  const view = new URLSearchParams(window.location.search).get("view");
+  return view === "static" || view === "severance" ? view : "video";
+}
 
 function App() {
   const [mode, setMode] = useState<Mode>(getMode);
   const [src, setSrc] = useState(() => pickRandom(videoList[getMode()]));
-  const [isStatic, setIsStatic] = useState(
-    () => new URLSearchParams(window.location.search).get("view") === "static"
-  );
+  const [view, setView] = useState<View>(getInitialView);
+  const previousView = useRef<Exclude<View, "severance">>("video");
 
   // check for day/night transition
   useEffect(() => {
@@ -60,36 +59,60 @@ function App() {
 
   // rotate video within the same mode
   useEffect(() => {
-    if (isStatic) return;
+    if (view !== "video") return;
     const id = setInterval(() => {
       setSrc((prev) => pickRandom(videoList[mode], prev));
     }, ROTATION_INTERVAL_MS);
     return () => clearInterval(id);
-  }, [mode, isStatic]);
+  }, [mode, view]);
 
-  const handleSwitch = () => {
-    const next = !isStatic;
-    if (!next) {
+  const changeView = (next: View) => {
+    if (next === "video") {
       setSrc(pickRandom(videoList[mode]));
     }
-    setIsStatic(next);
+    setView(next);
     const url = new URL(window.location.href);
-    if (next) {
-      url.searchParams.set("view", "static");
-    } else {
+    if (next === "video") {
       url.searchParams.delete("view");
+    } else {
+      url.searchParams.set("view", next);
     }
     window.history.replaceState(null, "", url);
   };
 
+  const handleSwitch = () => {
+    const next = view === "static" ? "video" : "static";
+    previousView.current = next;
+    changeView(next);
+  };
+
+  const handleSeveranceSwitch = () => {
+    if (view === "severance") {
+      changeView(previousView.current);
+      return;
+    }
+    previousView.current = view;
+    changeView("severance");
+  };
+
   return (
     <>
-      {isStatic ? (
+      {view === "static" ? (
         <img
           key={mode}
           src={withBase(STATIC_IMAGES[mode])}
           alt=""
-          style={mediaStyle}
+          className="media"
+        />
+      ) : view === "severance" ? (
+        <video
+          src={withBase(SEVERANCE_VIDEO)}
+          poster={withBase(SEVERANCE_POSTER)}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="media"
         />
       ) : (
         src && (
@@ -100,28 +123,28 @@ function App() {
             loop
             muted
             playsInline
-            style={mediaStyle}
+            className="media"
           />
         )
       )}
-      <button
-        onClick={handleSwitch}
-        style={{
-          position: "fixed",
-          bottom: "24px",
-          right: "24px",
-          padding: "8px 20px",
-          background: "rgba(255, 255, 255, 0.15)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255, 255, 255, 0.25)",
-          borderRadius: "8px",
-          color: "#fff",
-          fontSize: "14px",
-          cursor: "pointer",
-        }}
-      >
-        switch
-      </button>
+      <div className="controls">
+        <button
+          type="button"
+          className="mode-button"
+          onClick={handleSwitch}
+          aria-pressed={view === "static"}
+        >
+          switch
+        </button>
+        <button
+          type="button"
+          className={`mode-button severance-button${view === "severance" ? " is-active" : ""}`}
+          onClick={handleSeveranceSwitch}
+          aria-pressed={view === "severance"}
+        >
+          severance
+        </button>
+      </div>
     </>
   );
 }

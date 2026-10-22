@@ -14,7 +14,7 @@ type View = "video" | "static" | "severance";
 
 const base = import.meta.env.BASE_URL;
 const withBase = (path: string) => base + path.replace(/^\//, "");
-const SEVERANCE_VIDEO = "/videos/severance.mp4";
+const SEVERANCE_VIDEO = "/videos/severance-web.mp4";
 const SEVERANCE_POSTER = "/severance-poster.jpg";
 
 function getMode(): Mode {

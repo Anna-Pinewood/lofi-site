@@ -25,7 +25,7 @@ Drop `.mp4` files into the appropriate folder:
 public/videos/
 ├── day/       ← plays 05:00–17:59
 ├── night/     ← plays 18:00–04:59
-└── severance.mp4
+└── severance-web.mp4
 ```
 
 Restart `npm run dev` to pick up changes.

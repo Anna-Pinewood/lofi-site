@@ -42,6 +42,7 @@ function App() {
   const [src, setSrc] = useState(() => pickRandom(videoList[getMode()]));
   const [view, setView] = useState<View>(getInitialView);
   const previousView = useRef<Exclude<View, "severance">>("video");
+  const severanceVideo = useRef<HTMLVideoElement>(null);
 
   // check for day/night transition
   useEffect(() => {
@@ -65,6 +66,11 @@ function App() {
     }, ROTATION_INTERVAL_MS);
     return () => clearInterval(id);
   }, [mode, view]);
+
+  useEffect(() => {
+    if (view !== "severance") return;
+    void severanceVideo.current?.play().catch(() => undefined);
+  }, [view]);
 
   const changeView = (next: View) => {
     if (next === "video") {
@@ -106,12 +112,17 @@ function App() {
         />
       ) : view === "severance" ? (
         <video
+          ref={severanceVideo}
           src={withBase(SEVERANCE_VIDEO)}
           poster={withBase(SEVERANCE_POSTER)}
           autoPlay
           loop
           muted
           playsInline
+          preload="auto"
+          onCanPlay={(event) => {
+            void event.currentTarget.play().catch(() => undefined);
+          }}
           className="media"
         />
       ) : (
